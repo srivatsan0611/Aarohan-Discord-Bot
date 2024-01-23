@@ -30,3 +30,4 @@ client.login(process.env.token);
 
 
 //Test to comment
+console.log("For git only");
