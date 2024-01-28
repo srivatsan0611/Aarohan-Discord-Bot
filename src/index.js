@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, IntentsBitField, EmbedBuilder } = require('discord.js');
+const { Client, IntentsBitField, MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
   intents: [
@@ -10,8 +10,8 @@ const client = new Client({
   ],
 });
 
-client.on('ready', (c) => {
-  console.log(`${c.user.tag} is online.`);
+client.on('ready', () => {
+  console.log(`${client.user.tag} is online.`);
 });
 
 client.on('interactionCreate', (interaction) => {
@@ -19,21 +19,8 @@ client.on('interactionCreate', (interaction) => {
 
   if (interaction.commandName === 'embed') {
     const embed = new EmbedBuilder()
-      .setTitle('Title for Embed')
-      .setDescription('Testing Embed - 1')
-      .setColor('Random')
-      .addFields(
-        {
-          name: 'Introduction',
-          value: `Hi I'm Aarohan`,
-          inline: true,
-        },
-        {
-          name: 'This is an Embedded Message',
-          value: '(For Testing)',
-          inline: true,
-        }
-      );
+      .setTitle('Welcome to the Server!')
+      .setDescription('We are excited to have you here. Enjoy your stay!')
 
     interaction.reply({ embeds: [embed] });
   }
@@ -42,23 +29,43 @@ client.on('interactionCreate', (interaction) => {
 client.on('messageCreate', (message) => {
   if (message.content === 'embed') {
     const embed = new EmbedBuilder()
-      .setTitle('Embed title')
-      .setDescription('This is an embed description')
-      .setColor('Random')
-      .addFields(
+      .setTitle(`I'm Aarohan!`)
+      .setDescription('A bot with a bunch of functionalities! :)')
+      .setColor('#FFD700')
+      /*.addFields(
         {
-          name: 'Field title',
-          value: 'Some random value',
+          name: 'Field Title 1',
+          value: 'Some creative value here!', 
           inline: true,
         },
         {
-          name: '2nd Field title',
-          value: 'Some random value',
+          name: 'Field Title 2',
+          value: 'Another creative value!',
           inline: true,
         }
-      );
+      ) */
+      .setTimestamp()
+    const row = new MessageActionRow().addComponents(
+      new MessageButton()
+        .setCustomId('button_primary')
+        .setLabel('Click me!')
+        .setStyle('PRIMARY')
+    );
 
-    message.channel.send({ embeds: [embed] });
+    message.channel.send({ embeds: [embed], components: [row] });
+  }
+});
+
+client.on('guildMemberAdd', (member) => {
+  const welcomeChannel = member.guild.channels.cache.find((channel) => channel.name === 'welcome');
+
+  if (welcomeChannel) {
+    const welcomeEmbed = new EmbedBuilder()
+      .setTitle(`Welcome to ${member.guild.name}!`)
+      .setDescription(`Hey ${member.user.username}, welcome to our awesome server!`)
+      .setColor('#3498db');
+
+    welcomeChannel.send({ embeds: [welcomeEmbed] });
   }
 });
 
