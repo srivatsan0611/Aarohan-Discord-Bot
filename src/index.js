@@ -62,7 +62,7 @@ client.on('guildMemberAdd', (member) => {
   if (welcomeChannel) {
     const welcomeEmbed = new EmbedBuilder()
       .setTitle(`Welcome to ${member.guild.name}!`)
-      .setDescription(`Hey ${member.user.username}, welcome to our awesome server!`)
+      .setDescription(`Hey ${member.user.username}, welcome to our server!`)
       .setColor('#3498db');
 
     welcomeChannel.send({ embeds: [welcomeEmbed] });
