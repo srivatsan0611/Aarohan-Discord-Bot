@@ -6,6 +6,10 @@ const commands = [
     name: 'embed',
     description: 'Sends an embed!',
   },
+  {
+    name: 'quote',
+    description: 'Random Quote'
+  }
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.token);

@@ -1,4 +1,6 @@
 require('dotenv').config();
+//const fetch = require('node-fetch');
+
 const { Client, IntentsBitField, MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
@@ -14,7 +16,7 @@ client.on('ready', () => {
   console.log(`${client.user.tag} is online.`);
 });
 
-client.on('interactionCreate', (interaction) => {
+client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === 'embed') {
@@ -23,6 +25,19 @@ client.on('interactionCreate', (interaction) => {
       .setDescription('We are excited to have you here. Enjoy your stay!')
 
     interaction.reply({ embeds: [embed] });
+  }
+  else if (interaction.commandName === 'quote') {
+    // Fetch a random quote from Quotable API
+    const quoteResponse = await fetch('https://api.quotable.io/random');
+    const quoteData = await quoteResponse.json();
+
+    // Create an embed with the quote
+    const quoteEmbed = new EmbedBuilder()
+      .setTitle('Random Quote')
+      .setDescription(`*${quoteData.content}*\n- ${quoteData.author}`)
+      .setColor('#00ff00');
+
+    interaction.reply({ embeds: [quoteEmbed] });
   }
 });
 
