@@ -1,4 +1,5 @@
 require('dotenv').config();
+const Discord = require('discord.js');
 //const fetch = require('node-fetch');
 
 const { Client, IntentsBitField, MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js');
@@ -27,11 +28,10 @@ client.on('interactionCreate', async (interaction) => {
     interaction.reply({ embeds: [embed] });
   }
   else if (interaction.commandName === 'quote') {
-    // Fetch a random quote from Quotable API
-    const quoteResponse = await fetch('https://api.quotable.io/random');
+
+    const quoteResponse = await fetch('https://api.quotable.io/random'); //Fetching -> (node-fetch)
     const quoteData = await quoteResponse.json();
 
-    // Create an embed with the quote
     const quoteEmbed = new EmbedBuilder()
       .setTitle('Random Quote')
       .setDescription(`*${quoteData.content}*\n- ${quoteData.author}`)
@@ -39,37 +39,50 @@ client.on('interactionCreate', async (interaction) => {
 
     interaction.reply({ embeds: [quoteEmbed] });
   }
-});
-
-client.on('messageCreate', (message) => {
-  if (message.content === 'embed') {
+  else if (interaction.commandName === 'serverinfo') {
+    const server = interaction.guild;
+  
     const embed = new EmbedBuilder()
-      .setTitle(`I'm Aarohan!`)
-      .setDescription('A bot with a bunch of functionalities! :)')
-      .setColor('#FFD700')
-      /*.addFields(
-        {
-          name: 'Field Title 1',
-          value: 'Some creative value here!', 
-          inline: true,
-        },
-        {
-          name: 'Field Title 2',
-          value: 'Another creative value!',
-          inline: true,
-        }
-      ) */
-      .setTimestamp()
-    const row = new MessageActionRow().addComponents(
-      new MessageButton()
-        .setCustomId('button_primary')
-        .setLabel('Click me!')
-        .setStyle('PRIMARY')
-    );
+      .setTitle(`Server Information - ${server.name}`)
+      .setThumbnail(server.iconURL())
+      .addFields(
+        { name: 'Member Count', value: server.memberCount.toString() },
+        { name: 'Owner', value: `<@${server.ownerId}>` },
+        //{ name: 'Region', value: server.region },
+        //{ name: 'Verification Level', value: server.verificationLevel.toString() },
+        { name: 'Role Count', value: server.roles.cache.size.toString() },
+        { name: 'Created At', value: server.createdAt.toLocaleString() },
+      );
+  
+    interaction.reply({ embeds: [embed] });
+  }
+  
+  else if (interaction.commandName === 'kick') {
+    const member = interaction.options.getMember('member');
+    if (!member) return interaction.reply({ content: 'Please specify a valid member to kick.', ephemeral: true });
+  
+    try {
+      await member.kick();
+      interaction.reply({ content: `${member.user.tag} has been kicked from the server.`, ephemeral: true });
+    } catch (error) {
+      console.error(error);
+      interaction.reply({ content: 'I was unable to kick the member. Please check my permissions.', ephemeral: true });
+    }
+  }
 
-    message.channel.send({ embeds: [embed], components: [row] });
+  else if (interaction.commandName === 'roll') {
+    const randomNumber = Math.floor(Math.random() * 6) + 1;
+
+    const rollEmbed = new EmbedBuilder()
+        .setTitle('Dice Roll')
+        .setDescription(`You rolled a ${randomNumber}! 🎲`)
+        .setColor('#FFA500');
+
+    interaction.reply({ embeds: [rollEmbed] });
   }
 });
+
+
 
 client.on('guildMemberAdd', (member) => {
   const welcomeChannel = member.guild.channels.cache.find((channel) => channel.name === 'welcome');

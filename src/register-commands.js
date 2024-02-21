@@ -3,12 +3,28 @@ const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
 
 const commands = [
   {
-    name: 'embed',
-    description: 'Sends an embed!',
-  },
-  {
     name: 'quote',
     description: 'Random Quote'
+  },
+  {
+    name: 'serverinfo',
+    description: 'Get information about the server',
+  },
+  {
+    name: 'kick',
+    description: 'Kick a member from the server',
+    options: [
+      {
+        name: 'member',
+        description: 'The member to kick',
+        type: ApplicationCommandOptionType.User,
+        required: true,
+      },
+    ],
+  },
+  {
+    name: 'roll',
+    description: 'Roll a dice for whatever reason'
   }
 ];
 
