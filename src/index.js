@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Discord = require('discord.js');
+const { PermissionsBitField } = require('discord.js');
 //const fetch = require('node-fetch');
 
 const { Client, IntentsBitField, MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js');
@@ -56,19 +57,28 @@ client.on('interactionCreate', async (interaction) => {
   
     interaction.reply({ embeds: [embed] });
   }
-  
   else if (interaction.commandName === 'kick') {
+    // Check if the user has the KICK_MEMBERS permission
+    if (!interaction.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {
+      return interaction.reply({ content: 'You do not have permission to kick members.', ephemeral: false });
+    }
+
     const member = interaction.options.getMember('member');
     if (!member) return interaction.reply({ content: 'Please specify a valid member to kick.', ephemeral: true });
   
     try {
-      await member.kick();
-      interaction.reply({ content: `${member.user.tag} has been kicked from the server.`, ephemeral: true });
+        
+        if (!member.kickable) {
+            return interaction.reply({ content: 'I am unable to kick the member. Please check my permissions.', ephemeral: true });
+        }
+        await member.kick();
+        interaction.reply({ content: `${member.user.tag} has been kicked from the server.`});
     } catch (error) {
-      console.error(error);
-      interaction.reply({ content: 'I was unable to kick the member. Please check my permissions.', ephemeral: true });
+        console.error(error);
+        interaction.reply({ content: 'An error occurred while trying to kick the member.' });
     }
-  }
+}  
+  
 
   else if (interaction.commandName === 'roll') {
     const randomNumber = Math.floor(Math.random() * 6) + 1;
